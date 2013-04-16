@@ -9,6 +9,10 @@ end
 
 require "twitter_search_photos"
 
+get '/' do 
+  redirect '/index.html'
+end
+
 # define a route that uses the helper
 get '/twitter' do
   response = TwitterSearchPhotos.search('#' + ENV['SEARCH_TAG'])

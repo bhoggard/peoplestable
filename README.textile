@@ -1,0 +1,11 @@
+h1. The People's Table
+
+Open-source Sinatra app for "Man Bartlett's":http://manbartlett.com "The People's Table":http://www.thepeoplestable.com/.
+
+h2. Operation
+
+* Application checks the Twitter Search API for a given hash tag, returns recent images provided.
+* Front-end updates display based on that data.
+
+
+

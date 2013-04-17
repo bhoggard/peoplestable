@@ -1,14 +1,3 @@
-require "sinatra"
-require "sinatra/json"
-require "multi_json"
-
-if settings.development?
-  require 'dotenv'
-  Dotenv.load
-end
-
-require "twitter_search_photos"
-
 get '/' do 
   redirect '/index.html'
 end

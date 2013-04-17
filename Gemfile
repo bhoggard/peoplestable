@@ -8,6 +8,8 @@ gem 'multi_json'
 gem 'twitter_search_photos'
 gem 'dotenv-rails', :groups => [:development, :test]
 gem 'instagram'
+gem 'mongo'
+gem 'bson_ext'
 
 group :production do
   gem "unicorn"

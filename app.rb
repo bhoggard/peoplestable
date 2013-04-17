@@ -1,3 +1,5 @@
+require './lib/photo'
+
 get '/' do 
   redirect '/index.html'
 end

@@ -1,8 +1,3 @@
-var Image = Backbone.Model.extend({});
-
-var ImageStore = Backbone.Collection.extend({
-  model: Image,
-  url: '/twitter'
+$.getJSON('/twitter', function(data) {
+  // console.log(data);
 });
-
-var images = new ImageStore;

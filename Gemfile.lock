@@ -2,6 +2,9 @@ GEM
   remote: https://rubygems.org/
   specs:
     backports (3.3.0)
+    bson (1.8.5)
+    bson_ext (1.8.5)
+      bson (~> 1.8.5)
     dotenv (0.7.0)
     dotenv-rails (0.7.0)
       dotenv (= 0.7.0)
@@ -17,6 +20,8 @@ GEM
       hashie (>= 0.4.0)
       multi_json (~> 1.0, >= 1.0.3)
     kgio (2.8.0)
+    mongo (1.8.5)
+      bson (~> 1.8.5)
     multi_json (1.7.2)
     multipart-post (1.2.0)
     rack (1.5.2)
@@ -42,7 +47,7 @@ GEM
       faraday (~> 0.8, < 0.10)
       multi_json (~> 1.0)
       simple_oauth (~> 0.2)
-    twitter_search_photos (0.0.3)
+    twitter_search_photos (0.0.5)
       twitter (~> 4.6)
     unicorn (4.6.2)
       kgio (~> 2.6)
@@ -53,8 +58,10 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  bson_ext
   dotenv-rails
   instagram
+  mongo
   multi_json
   sinatra
   sinatra-contrib

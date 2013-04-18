@@ -6,8 +6,8 @@ $(
 
     $.each(data, function(index, value) {
       img_id = "image_" + index
-      img    = $('<img />', { id: img_id, class: 'image', src: value.thumb_url, alt: value.screen_name }).slideDown('slow').hide().delay(eT).fadeIn('slow').rotate(Math.floor(15 - Math.random() * 30));
-      link   = $('<a />', { href: value.link_url, html: img });
+      img    = $('<img />', { id: img_id, src: value.thumb_url, alt: value.screen_name }).slideDown('slow').hide().delay(eT).fadeIn('slow').rotate(Math.floor(15 - Math.random() * 30));
+      link   = $('<a />', { target: '_blank', href: value.link_url, html: img });
       bottom = 53 * Math.floor(index / 5);
 
       // if we're full, randomly place it

@@ -23,8 +23,8 @@ class Photo
       response = TwitterSearchPhotos.search('#' + ENV['SEARCH_TAG'], since_id: max_id)
     else
       response = TwitterSearchPhotos.search('#' + ENV['SEARCH_TAG'])
-      set_max_id(response.max_id)
     end
+    set_max_id(response.max_id)
     response.results.each do |result|
       Photo.store(
         screen_name: result.screen_name, 

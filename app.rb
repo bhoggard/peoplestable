@@ -5,6 +5,6 @@ get '/' do
 end
 
 get '/twitter' do
-  json (Photo.all.to_a * 100)
+  json (Photo.all.to_a * 20)
 end
 

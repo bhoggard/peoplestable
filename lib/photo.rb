@@ -3,6 +3,8 @@
 class Photo
   include Mongo
 
+  @@db = nil
+
   # attr_accessor :thumb_url, :link_url, :screen_name, :timestamp
 
   # store hash into photos collection
@@ -43,8 +45,17 @@ class Photo
   private
 
     def self.db
-      @@client ||= MongoClient.new
-      @@db ||= @@client["peoplestable_#{ENV['RACK_ENV'] || 'development'}"]
+      return @@db if @@db
+      if ENV['MONGOHQ_URL']
+        db = URI.parse(ENV['MONGOHQ_URL'])
+        db_name = db.path.gsub(/^\//, '')
+        @@db = Mongo::Connection.new(db.host, db.port).db(db_name)
+        @@db.authenticate(db.user, db.password) unless (db.user.nil? || db.user.nil?)
+        @@db
+      else
+        client = MongoClient.new
+        @@db = client["peoplestable_development"]
+      end
     end
 
     def self.collection

@@ -11,7 +11,7 @@ gem 'instagram'
 gem 'mongo'
 gem 'bson_ext'
 gem 'unicorn'
-gem 'clockwork', git: 'git://github.com/tomykaira/clockwork.git'
+gem 'clockwork'
 
 group :production do
   gem 'newrelic_rpm'

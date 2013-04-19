@@ -6,12 +6,17 @@ end
 
 get '/all_photos' do
   photos = Photo.all.to_a
-  latest = photos.max_by { |x| x["created_at"] }
-  json photos: photos, timestamp: latest["created_at"]
+  json photos: photos, timestamp: photos.last["created_at"]
 end
 
 get '/photos_since/:timestamp' do
-  json Photo.all_since(params[:timestamp]).to_a
+  timestamp = params[:timestamp]
+  photos = Photo.all_since(timestamp).to_a
+  # photos might be empty, then keep our existing timestamp
+  unless photos.empty?
+    timestamp = photos.last["created_at"] 
+  end
+  json photos: photos, timestamp: timestamp
 end
 
 

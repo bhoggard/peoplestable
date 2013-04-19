@@ -20,14 +20,21 @@ PeoplesTable.image_div = function(image_data) {
     .css("z-index", Math.floor(1 + Math.random() * 20));
 }
 
-// load all photos in DB the first time, then only new ones
-PeoplesTable.update_photos = function(firstTime) {
-  if (firstTime) {
-    url = '/all_photos';
-  } else {
-    url = '/photos';
-  }
-  $.getJSON(url, function(data) {
+// load all photos in DB the first time
+PeoplesTable.all_photos = function() {
+  $.getJSON('/all_photos', function(data) {
+    PeoplesTable.timestamp = data.timestamp;
+    photos_div = $('#photos');
+    $.each(data.photos, function(index, value) {
+      photos_div.prepend(PeoplesTable.image_div(value));
+    });
+  })
+}
+
+// get new photos based on our timestamp
+PeoplesTable.update_photos = function() {
+  $.getJSON('/photos_since/' + PeoplesTable.timestamp, function(data) {
+    PeoplesTable.timestamp = data.timestamp;
     photos_div = $('#photos');
     $.each(data.photos, function(index, value) {
       photos_div.prepend(PeoplesTable.image_div(value));
@@ -36,7 +43,7 @@ PeoplesTable.update_photos = function(firstTime) {
 }
 
 $(function() {
-  PeoplesTable.update_photos(true);
-  // setInterval(PeoplesTable.update_photos, 60 * 1000);
+  PeoplesTable.all_photos();
+  setInterval(PeoplesTable.update_photos, 60 * 1000);
 });
 

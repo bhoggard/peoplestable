@@ -3,32 +3,42 @@
 class Photo
   include Mongo
 
+  def initialize(db_connection)
+    @db = db_connection
+  end
+
   # attr_accessor :thumb_url, :link_url, :screen_name, :created_at
 
   # store hash into photos collection
-  def self.store(db,values)
-    collection(db).insert(values)
+  def store(values)
+    collection.insert(values)
   end
 
   # get all, sorted by created_at
-  def self.all(db) 
-    collection(db).find().sort(:created_at)
+  def all
+    collection.find().sort(:created_at)
   end
 
   # get all since created_at timestamp
-  def self.all_since(db, timestamp)
-    collection(db).find({ created_at: { :$gt => timestamp } }).sort(:created_at)
+  def all_since(timestamp)
+    collection.find({ created_at: { :$gt => timestamp } }).sort(:created_at)
   end
 
   # run an update of all, or all since a given max_id, returning results
-  def self.refresh(db)
+  def refresh
     # only do this once every 60 seconds
-    (refresh_twitter(db) + refresh_instagram(db)).shuffle
+    timestamp = Time.now.to_i
+    last_updated = get_last_updated
+    if last_updated.nil? || (timestamp - last_updated.to_i) >= 60
+      refresh_twitter
+      refresh_instagram
+      set_last_updated(timestamp)
+    end
   end
 
   private
 
-    def self.refresh_twitter(db)
+    def refresh_twitter
       max_id = get_max_id('twitter')
       response = nil
       if max_id
@@ -46,13 +56,12 @@ class Photo
           created_at: result.created_at.to_time.to_i.to_s
         }
 
-        Photo.store(db, photo_data)
+        store(photo_data)
         twitter_results << photo_data
       end
-      twitter_results
     end
 
-    def self.refresh_instagram(db)
+    def refresh_instagram
       configure_instagram
       max_id = get_max_id('instagram')
       results = nil
@@ -71,24 +80,34 @@ class Photo
           link_url:    result['link'],
           created_at:  result['created_time']
         }
-        Photo.store(db, photo_data)
+        store(photo_data)
         instagram_results << photo_data
       end
-      instagram_results
     end
 
-    def self.collection(db)
-      db['photos']
+    def collection
+      @db['photos']
     end
 
-    def self.settings(db)
-      db['settings']
+    def settings
+      @db['settings']
+    end
+
+    # get/set last updated timestamp so we don't refresh too often
+    def get_last_updated
+      last = settings.find_one({ name: 'last_updated' })
+      last ? last["value"] : nil
+    end
+
+    def set_last_updated(val)
+      key = 'last_updated'
+      settings.update({ name: key }, { name: key, value: val.to_s }, { upsert: true })
     end
 
     # get/set last ID returned from Twitter or Instagram
-    def self.get_max_id(db, service)
+    def get_max_id(service)
       key = "#{service}_max_id"
-      max_id = settings(db).find_one({ name: key })
+      max_id = settings.find_one({ name: key })
       if max_id
         max_id["value"]
       else
@@ -96,12 +115,12 @@ class Photo
       end
     end
 
-    def self.set_max_id(db, service, val)
+    def set_max_id(service, val)
       key = "#{service}_max_id"
-      settings(db).update({ name: key }, { name: key, value: val.to_s }, { upsert: true })
+      settings.update({ name: key }, { name: key, value: val.to_s }, { upsert: true })
     end
 
-    def self.configure_instagram
+    def configure_instagram
       Instagram.configure do |config|
         config.client_id     = ENV['INSTAGRAM_CLIENT_ID']
         config.client_secret = ENV['INSTAGRAM_CLIENT_SECRET']

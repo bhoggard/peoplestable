@@ -13,7 +13,7 @@ gem 'bson_ext'
 gem 'unicorn'
 
 group :production do
-  require 'newrelic_rpm'
+  gem 'newrelic_rpm'
 end
 
 

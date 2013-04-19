@@ -29,7 +29,7 @@ PeoplesTable.update_photos = function(firstTime) {
   }
   $.getJSON(url, function(data) {
     photos_div = $('#photos');
-    $.each(data, function(index, value) {
+    $.each(data.photos, function(index, value) {
       photos_div.prepend(PeoplesTable.image_div(value));
     });
   })
@@ -37,6 +37,6 @@ PeoplesTable.update_photos = function(firstTime) {
 
 $(function() {
   PeoplesTable.update_photos(true);
-  setInterval(PeoplesTable.update_photos, 60 * 1000);
+  // setInterval(PeoplesTable.update_photos, 60 * 1000);
 });
 

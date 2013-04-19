@@ -6,16 +6,21 @@ class Photo
   @@db = nil
   @@instagram_configured = false
 
-  # attr_accessor :thumb_url, :link_url, :screen_name, :timestamp
+  # attr_accessor :thumb_url, :link_url, :screen_name, :created_at
 
   # store hash into photos collection
   def self.store(values)
     collection.insert(values)
   end
 
-  # get all, sorted by timestamp
+  # get all, sorted by created_at
   def self.all 
-    rows = collection.find().sort(:timestamp)
+    collection.find().sort(:created_at)
+  end
+
+  # get all since created_at timestamp
+  def self.all_since(timestamp)
+    collection.find({ created_at: { :$gt => timestamp } }).sort(:created_at)
   end
 
   # run an update of all, or all since a given max_id, returning results
@@ -44,7 +49,7 @@ class Photo
           screen_name: result.screen_name, 
           thumb_url: "#{result.media_url}:thumb", 
           link_url: result.display_url,
-          created_at: result.created_at.to_s
+          created_at: result.created_at.to_time.to_i.to_s
         }
 
         Photo.store(photo_data)
@@ -70,7 +75,7 @@ class Photo
           screen_name: result['user']['username'], 
           thumb_url:   result['images']['thumbnail']['url'], 
           link_url:    result['link'],
-          created_at:  Time.at(result['created_time'].to_i).to_datetime.to_s
+          created_at:  result['created_time']
         }
         Photo.store(photo_data)
         instagram_results << photo_data

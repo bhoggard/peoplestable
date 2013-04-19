@@ -1,11 +1,10 @@
 h1. The People's Table
 
-Open-source Sinatra app for "Man Bartlett's":http://manbartlett.com "The People's Table":http://www.thepeoplestable.com/.
+Open-source Sinatra app for "Man Bartlett's":http://manbartlett.com "The People's Table":http://www.thepeoplestable.com/. Go "here": http://www.brooklynmuseum.org/community/blogosphere/2013/04/18/join-us-at-table17/ for a blog post about it by the Brooklyn Museum.
 
 h2. Operation
 
-* Application checks the Twitter Search API for a given hash tag, returns recent images provided.
-* Front-end updates display based on that data.
-
+* Clockwork-based job checks Twitter and Instagram for new images using a specific hashtag/tag, putting those into a MongoDB database.
+* A jQuery front-end builds a pile of images based on all found so far, then checks once per minute for any new images to add to the table.
 
 

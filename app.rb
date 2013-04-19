@@ -5,10 +5,6 @@ configure do
   set :conn, AppDB.db_connection
 end
 
-configure :production do
-  require 'newrelic_rpm'
-end
-
 get '/' do 
   redirect '/index.html'
 end

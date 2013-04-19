@@ -26,7 +26,6 @@ GEM
       bson (~> 1.8.5)
     multi_json (1.7.2)
     multipart-post (1.2.0)
-    newrelic_rpm (3.5.7.59)
     rack (1.5.2)
     rack-protection (1.5.0)
       rack
@@ -50,7 +49,7 @@ GEM
       faraday (~> 0.8, < 0.10)
       multi_json (~> 1.0)
       simple_oauth (~> 0.2)
-    twitter_search_photos (0.0.5)
+    twitter_search_photos (0.0.6)
       twitter (~> 4.6)
     tzinfo (0.3.37)
     unicorn (4.6.2)
@@ -68,7 +67,6 @@ DEPENDENCIES
   instagram
   mongo
   multi_json
-  newrelic_rpm
   sinatra
   sinatra-contrib
   twitter_search_photos

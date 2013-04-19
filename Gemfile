@@ -13,8 +13,4 @@ gem 'bson_ext'
 gem 'unicorn'
 gem 'clockwork'
 
-group :production do
-  gem 'newrelic_rpm'
-end
-
 

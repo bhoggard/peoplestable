@@ -1,6 +1,6 @@
 h1. The People's Table
 
-Open-source Sinatra app for "Man Bartlett's":http://manbartlett.com "The People's Table":http://www.thepeoplestable.com/. Go "here": http://www.brooklynmuseum.org/community/blogosphere/2013/04/18/join-us-at-table17/ for a blog post about it by the Brooklyn Museum.
+Open-source Sinatra app for "Man Bartlett's":http://manbartlett.com "The People's Table":http://www.thepeoplestable.com/. Go "here":http://www.brooklynmuseum.org/community/blogosphere/2013/04/18/join-us-at-table17/ for a blog post about it by the Brooklyn Museum.
 
 h2. Operation
 

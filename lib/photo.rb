@@ -27,16 +27,35 @@ class Photo
   # run an update of all, or all since a given max_id, returning results
   def refresh
     # only do this once every 60 seconds
+    return if updating?
     timestamp = Time.now.to_i
     last_updated = get_last_updated
     if last_updated.nil? || (timestamp - last_updated.to_i) >= 60
+      set_updating
       refresh_twitter
       refresh_instagram
       set_last_updated(timestamp)
+      unset_updating
     end
   end
 
   private
+
+    # primitive lock to make sure we don't call refresh to often
+    def updating?
+      status = settings.find_one({ name: 'updating' })
+      status ? status["value"] : nil
+    end
+
+    def set_updating
+      key = 'updating'
+      settings.update({ name: key }, { name: key, value: true }, { upsert: true })
+    end
+
+    def unset_updating
+      key = 'updating'
+      settings.update({ name: key }, { name: key, value: false }, { upsert: true })
+    end
 
     def refresh_twitter
       max_id = get_max_id('twitter')

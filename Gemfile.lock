@@ -1,3 +1,10 @@
+GIT
+  remote: git://github.com/tomykaira/clockwork.git
+  revision: 418b5cda069ff9cfa8d8e06161ce128f6d3ed3ee
+  specs:
+    clockwork (0.5.0)
+      tzinfo (~> 0.3.35)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -50,6 +57,7 @@ GEM
       simple_oauth (~> 0.2)
     twitter_search_photos (0.0.5)
       twitter (~> 4.6)
+    tzinfo (0.3.37)
     unicorn (4.6.2)
       kgio (~> 2.6)
       rack
@@ -60,6 +68,7 @@ PLATFORMS
 
 DEPENDENCIES
   bson_ext
+  clockwork!
   dotenv-rails
   instagram
   mongo

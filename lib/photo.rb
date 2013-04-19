@@ -11,7 +11,7 @@ class Photo
 
   # store hash into photos collection
   def store(values)
-    collection.insert(values)
+    collection.update({ link_url: values[:link_url] }, values, { upsert: true })
   end
 
   # get all, sorted by created_at
@@ -24,38 +24,13 @@ class Photo
     collection.find({ created_at: { :$gt => timestamp } }).sort(:created_at)
   end
 
-  # run an update of all, or all since a given max_id, returning results
+  # refresh our feeds for new photos
   def refresh
-    # only do this once every 60 seconds
-    return if updating?
-    timestamp = Time.now.to_i
-    last_updated = get_last_updated
-    if last_updated.nil? || (timestamp - last_updated.to_i) >= 60
-      set_updating
-      refresh_twitter
-      refresh_instagram
-      set_last_updated(timestamp)
-      unset_updating
-    end
+    refresh_twitter
+    refresh_instagram
   end
 
   private
-
-    # primitive lock to make sure we don't call refresh to often
-    def updating?
-      status = settings.find_one({ name: 'updating' })
-      status ? status["value"] : nil
-    end
-
-    def set_updating
-      key = 'updating'
-      settings.update({ name: key }, { name: key, value: true }, { upsert: true })
-    end
-
-    def unset_updating
-      key = 'updating'
-      settings.update({ name: key }, { name: key, value: false }, { upsert: true })
-    end
 
     def refresh_twitter
       max_id = get_max_id('twitter')
@@ -128,7 +103,7 @@ class Photo
       key = "#{service}_max_id"
       max_id = settings.find_one({ name: key })
       if max_id
-        max_id["value"]
+        max_id["value"].to_i
       else
         nil
       end

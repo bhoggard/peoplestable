@@ -20,12 +20,23 @@ PeoplesTable.image_div = function(image_data) {
     .css("z-index", Math.floor(1 + Math.random() * 20));
 }
 
-$(
-  $.getJSON('/twitter', function(data) {
-    photos = $('#photos');
+// load all photos in DB the first time, then only new ones
+PeoplesTable.update_photos = function(firstTime) {
+  if (firstTime) {
+    url = '/all_photos';
+  } else {
+    url = '/photos';
+  }
+  $.getJSON(url, function(data) {
+    photos_div = $('#photos');
     $.each(data, function(index, value) {
-      photos.prepend(PeoplesTable.image_div(value));
+      photos_div.prepend(PeoplesTable.image_div(value));
     });
   })
-);
+}
+
+$(function() {
+  PeoplesTable.update_photos(true);
+  setInterval(PeoplesTable.update_photos, 60 * 1000);
+});
 

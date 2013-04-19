@@ -4,9 +4,11 @@ get '/' do
   redirect '/index.html'
 end
 
-get '/twitter' do
-  Photo.refresh
-  # json (Photo.all.to_a * 20)
+get '/photos' do
+  json Photo.refresh
+end
+
+get '/all_photos' do
   json Photo.all.to_a
 end
 

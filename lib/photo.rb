@@ -18,10 +18,9 @@ class Photo
     rows = collection.find().sort(:timestamp)
   end
 
-  # run an update of all, or all since a given max_id
+  # run an update of all, or all since a given max_id, returning results
   def self.refresh
-    refresh_twitter
-    refresh_instagram
+    (refresh_twitter + refresh_instagram).shuffle
   end
 
   def self.destroy_all
@@ -39,14 +38,19 @@ class Photo
         response = TwitterSearchPhotos.search('#' + ENV['SEARCH_TAG'])
       end
       set_max_id('twitter', response.max_id)
+      twitter_results = []
       response.results.each do |result|
-        Photo.store(
+        photo_data = {
           screen_name: result.screen_name, 
           thumb_url: "#{result.media_url}:thumb", 
           link_url: result.display_url,
           created_at: result.created_at.to_s
-        )
+        }
+
+        Photo.store(photo_data)
+        twitter_results << photo_data
       end
+      twitter_results
     end
 
     def self.refresh_instagram
@@ -60,14 +64,18 @@ class Photo
       end
       max_result = results.max_by { |x| x['id'].to_i }
       set_max_id('instagram', max_result['id'].to_i)
+      instagram_results = []
       results.each do |result|
-        Photo.store(
+        photo_data = {
           screen_name: result['user']['username'], 
           thumb_url:   result['images']['thumbnail']['url'], 
           link_url:    result['link'],
           created_at:  Time.at(result['created_time'].to_i).to_datetime.to_s
-        )
+        }
+        Photo.store(photo_data)
+        instagram_results << photo_data
       end
+      instagram_results
     end
 
     def self.db

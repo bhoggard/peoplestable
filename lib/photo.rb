@@ -3,38 +3,32 @@
 class Photo
   include Mongo
 
-  @@db = nil
-  @@instagram_configured = false
-
   # attr_accessor :thumb_url, :link_url, :screen_name, :created_at
 
   # store hash into photos collection
-  def self.store(values)
-    collection.insert(values)
+  def self.store(db,values)
+    collection(db).insert(values)
   end
 
   # get all, sorted by created_at
-  def self.all 
-    collection.find().sort(:created_at)
+  def self.all(db) 
+    collection(db).find().sort(:created_at)
   end
 
   # get all since created_at timestamp
-  def self.all_since(timestamp)
-    collection.find({ created_at: { :$gt => timestamp } }).sort(:created_at)
+  def self.all_since(db, timestamp)
+    collection(db).find({ created_at: { :$gt => timestamp } }).sort(:created_at)
   end
 
   # run an update of all, or all since a given max_id, returning results
-  def self.refresh
-    (refresh_twitter + refresh_instagram).shuffle
-  end
-
-  def self.destroy_all
-    collection.drop
+  def self.refresh(db)
+    # only do this once every 60 seconds
+    (refresh_twitter(db) + refresh_instagram(db)).shuffle
   end
 
   private
 
-    def self.refresh_twitter
+    def self.refresh_twitter(db)
       max_id = get_max_id('twitter')
       response = nil
       if max_id
@@ -52,13 +46,13 @@ class Photo
           created_at: result.created_at.to_time.to_i.to_s
         }
 
-        Photo.store(photo_data)
+        Photo.store(db, photo_data)
         twitter_results << photo_data
       end
       twitter_results
     end
 
-    def self.refresh_instagram
+    def self.refresh_instagram(db)
       configure_instagram
       max_id = get_max_id('instagram')
       results = nil
@@ -77,38 +71,24 @@ class Photo
           link_url:    result['link'],
           created_at:  result['created_time']
         }
-        Photo.store(photo_data)
+        Photo.store(db, photo_data)
         instagram_results << photo_data
       end
       instagram_results
     end
 
-    def self.db
-      return @@db if @@db
-      if ENV['MONGOHQ_URL']
-        db = URI.parse(ENV['MONGOHQ_URL'])
-        db_name = db.path.gsub(/^\//, '')
-        @@db = Mongo::Connection.new(db.host, db.port).db(db_name)
-        @@db.authenticate(db.user, db.password) unless (db.user.nil? || db.user.nil?)
-        @@db
-      else
-        client = MongoClient.new
-        @@db = client["peoplestable_development"]
-      end
-    end
-
-    def self.collection
+    def self.collection(db)
       db['photos']
     end
 
-    def self.settings
+    def self.settings(db)
       db['settings']
     end
 
     # get/set last ID returned from Twitter or Instagram
-    def self.get_max_id(service)
+    def self.get_max_id(db, service)
       key = "#{service}_max_id"
-      max_id = settings.find_one({ name: key })
+      max_id = settings(db).find_one({ name: key })
       if max_id
         max_id["value"]
       else
@@ -116,18 +96,16 @@ class Photo
       end
     end
 
-    def self.set_max_id(service, val)
+    def self.set_max_id(db, service, val)
       key = "#{service}_max_id"
-      settings.update({ name: key }, { name: key, value: val.to_s }, { upsert: true })
+      settings(db).update({ name: key }, { name: key, value: val.to_s }, { upsert: true })
     end
 
     def self.configure_instagram
-      return if @@instagram_configured
       Instagram.configure do |config|
         config.client_id     = ENV['INSTAGRAM_CLIENT_ID']
         config.client_secret = ENV['INSTAGRAM_CLIENT_SECRET']
       end
-      @@instagram_configured = true
     end
 
 end

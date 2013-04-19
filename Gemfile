@@ -10,9 +10,6 @@ gem 'dotenv-rails', :groups => [:development, :test]
 gem 'instagram'
 gem 'mongo'
 gem 'bson_ext'
-
-group :production do
-  gem "unicorn"
-end
+gem 'unicorn'
 
 

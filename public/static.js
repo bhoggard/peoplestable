@@ -18,7 +18,7 @@ PeoplesTable.image_div = function(image_data) {
 
 // load all photos from a JSON file
 PeoplesTable.all_photos = function() {
-  $.getJSON('/all_photos.json.gz', function(data) {
+  $.getJSON('/all_photos.json', function(data) {
     PeoplesTable.timestamp = data.timestamp;
     photos_div = $('#photos');
     $.each(data.photos, function(index, value) {
